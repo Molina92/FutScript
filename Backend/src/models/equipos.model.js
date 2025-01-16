@@ -17,8 +17,6 @@ const getTeams = async ({ limit = 10, page = 1, order_by = 'id_asc' }) => {
             offset
         );
 
-        console.log(SQLQuery)
-
         const { rows, rowCount } = await DB.query(SQLQuery)
         const { rowCount: count } = await DB.query('SELECT * FROM equipos')
 
@@ -32,15 +30,32 @@ const getTeams = async ({ limit = 10, page = 1, order_by = 'id_asc' }) => {
     }
 }
 
-const addTeam = async ( nombreEquipo ) => {
+const addTeam = async (nombreEquipo) => {
     try {
         const SQLQuery = format(`
             INSERT INTO equipos (name) VALUES (%L) RETURNING *`,
             nombreEquipo
         );
 
-        const { rowCount,rows } = await DB.query(SQLQuery)
-        return rowCount,rows
+        const { rowCount, rows } = await DB.query(SQLQuery)
+        return rowCount, rows
+
+    } catch (error) {
+        throw error
+    }
+}
+
+const getTeamsByName = async (nombreEquipo) => {
+    try {
+        const SQLQuery = format(`
+            SELECT * FROM equipos
+            WHERE name = %L
+            `,
+            nombreEquipo
+        );
+
+        const SQLResult = await DB.query(SQLQuery)
+        return Boolean(SQLResult.rowCount)
 
     } catch (error) {
         throw error
@@ -49,6 +64,7 @@ const addTeam = async ( nombreEquipo ) => {
 
 module.exports = {
     getTeams,
-    addTeam
+    addTeam,
+    getTeamsByName
 }
 
